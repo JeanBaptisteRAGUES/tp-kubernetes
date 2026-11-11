@@ -579,8 +579,17 @@ kubectl get events -n tp-k8s --sort-by=.metadata.creationTimestamp
 **Questions :**
 
 - Quel état observez-vous ?
+-> Les nouveaux Pods sont en état ErrImagePull, puis peuvent passer en ImagePullBackOff.
+
 - Quel événement indique la cause probable ?
+-> La commande kubectl get events renvoie le message Failed to pull image "nginx:image-inexistante"
+-> Ce message indique que l'image nginx:image-inexistante est introuvable sur Docker Hub.
+
 - Comment corriger le manifeste et vérifier le retour à la normale ?
+-> Il faut remplacer l'image incorrecte par une image valide, par exemple nginx:stable-alpine.
+-> kubectl set image deployment/web nginx=nginx:stable-alpine -n tp-k8s
+-> ou kubectl apply -f k8s/03-deployment.yaml
+-> Et ensuite vérifier les pods avec : kubectl get pods -n tp-k8s
 
 ### Incident B — Service inaccessible
 
@@ -596,8 +605,16 @@ kubectl get endpointslices -n tp-k8s
 **Questions :**
 
 - Pourquoi le Service n’a-t-il plus de destination exploitable ?
+-> Après avoir exécuté kubectl patch service web -n tp-k8s -p '{"spec":{"selector":{"app":"application-inexistante"}}}'
+-> Le sélecteur du service recherche des Pods ayant le label app=application-inexistante, alors que les Pods possèdent toujours le label app=web.
+-> Aucun Pod ne correspond donc au sélecteur. Kubernetes ne peut associer aucune destination au Service : son EndpointSlice ne contient plus d'endpoint utilisable.
+
 - Pourquoi les Pods peuvent-ils être opérationnels alors que l’application est inaccessible via le Service ?
+-> Les Pods et le Service sont deux ressources Kubernetes indépendantes.
+-> Les Pods peuvent continuer à exécuter correctement leurs conteneurs et à répondre directement à leurs adresses IP. En revanche, le Service s'appuie sur ses sélecteurs et ses points de terminaison pour distribuer le trafic.
+
 - Quelle correction permet de rétablir le routage ?
+-> Il suffit d'exécuter la commande : kubectl patch service web -n tp-k8s -p '{"spec":{"selector":{"app":"web"}}}'
 
 ### Incident C — Sonde de santé incorrecte
 
@@ -612,8 +629,17 @@ kubectl get endpointslices -n tp-k8s
 **Questions :**
 
 - Quel est l’effet d’une readiness probe en échec ?
+-> Lorsqu'une readiness probe échoue, Kubernetes considère que le Pod n'est pas prêt à recevoir du trafic.
+-> Le Pod reste généralement en fonctionnement (Running), mais il est marqué comme non disponible (Ready: False). Il est alors exclu des destinations utilisables par le Service.
+
 - En quoi son effet diffère-t-il de celui d’une liveness probe en échec ?
+-> Readiness probe : vérifie si l'application est prête à recevoir des requêtes. En cas d'échec, le Pod est retiré des destinations utilisables par les Services, mais son conteneur n'est pas redémarré.
+-> Liveness probe : vérifie si l'application fonctionne correctement. En cas d'échecs répétés, Kubernetes redémarre le conteneur.
+
 - Pourquoi une sonde mal configurée peut-elle provoquer une indisponibilité ?
+-> Une sonde mal configurée peut indiquer à tort que l'application n'est pas opérationnelle.
+-> Par exemple, une readiness probe qui interroge une route inexistante renvoie une erreur HTTP 404, même si l'application fonctionne correctement.
+-> Kubernetes considère alors le Pod comme non prêt et l'exclut du routage du Service.
 
 **Consigne :** restaurez tous les manifestes à un état fonctionnel après les expériences.
 
