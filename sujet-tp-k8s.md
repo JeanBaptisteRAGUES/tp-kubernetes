@@ -411,10 +411,27 @@ Si le Pod supprimé n’existe plus, sélectionnez un Pod encore présent.
 ### Questions d’analyse
 
 1. Pourquoi le Pod supprimé est-il remplacé ?
+Le Pod est remplacé parce qu'il est géré par un ReplicaSet, lui-même créé et géré par un Deployment.
+Le ReplicaSet surveille en permanence le nombre de Pods existants et le compare au nombre de réplicas souhaité.
+Ce mécanisme permet de maintenir l'état souhaité de l'application, même lorsqu'un Pod est supprimé ou tombe en panne.
+
 2. Quelle différence existe-t-il entre la suppression d’un Pod et l’arrêt d’un processus dans un conteneur ?
+La différence principale est que la suppression d'un Pod entraîne la création d'un nouvel objet Pod, tandis que l'arrêt d'un processus peut simplement provoquer le redémarrage du conteneur à l'intérieur du Pod existant
+
 3. Pourquoi un redémarrage de conteneur ne signifie-t-il pas nécessairement que le cluster entier est en panne ?
+Kubernetes est conçu pour gérer les défaillances à plusieurs niveaux.
+Un conteneur peut rencontrer un problème et être redémarré sans que les autres conteneurs, Pods ou composants du cluster soient affectés.
+
 4. Que se passerait-il si le nœud unique de Minikube devenait indisponible ?
+Si ce nœud devenait indisponible :
+- Les deux Pods Nginx deviendraient inaccessibles.
+- Le Service ne pourrait plus acheminer les requêtes vers une application fonctionnelle.
+- Les composants du Control Plane deviendraient également indisponibles.
+- Kubernetes ne pourrait plus gérer normalement les ressources du cluster ni créer de nouveaux Pods sur un autre nœud.
+
 5. Pourquoi un cluster local à un seul nœud ne permet-il pas de démontrer la tolérance à la panne d’un nœud physique ?
+Un cluster à un seul nœud ne possède aucune autre machine sur laquelle déplacer les applications en cas de panne du nœud principal.
+Il ne permet donc pas de démontrer la tolérance à la panne d'un nœud physique, car il n'existe aucun second nœud disponible pour prendre le relais.
 
 ---
 
