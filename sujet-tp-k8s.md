@@ -66,6 +66,12 @@ minikube version
 minikube start --driver=docker --cpus=2 --memory=4096
 ```
 
+(Dans mon cas, je vais plutôt utiliser cette commande)
+
+```bash
+minikube start --driver=docker --cpus=2 --memory=3072
+```
+
 Vérifiez son état :
 
 ```bash
@@ -106,10 +112,28 @@ La commande `kubectl get componentstatuses` est obsolète dans les versions réc
 ### Questions
 
 1. Quel est le rôle du control plane ?
+Le Control Plane est la partie de Kubernetes qui pilote et supervise le cluster.
+Il est responsable de la gestion de l'état du cluster : il reçoit les demandes des utilisateurs, prend les décisions nécessaires et veille à ce que l'état réel du cluster corresponde à l'état souhaité.
+
 2. Quelle différence existe-t-il entre un nœud Kubernetes et un Pod ?
+Un nœud est une machine physique ou virtuelle sur laquelle Kubernetes exécute les applications. Il fournit les ressources nécessaires à leur fonctionnement (processeur, mémoire, stockage).
+Un Pod est la plus petite unité déployable de Kubernetes. Il représente un ou plusieurs conteneurs qui partagent notamment le même environnement réseau et peuvent partager des volumes de stockage.
+-> Un nœud peut donc héberger plusieurs Pods.
+
 3. Quel contrôleur maintient le nombre de réplicas demandé par un Deployment ?
+C'est le ReplicaSet Controller qui assure le maintien du nombre de réplicas souhaité.
+
 4. Quelle différence existe-t-il entre un conteneur et un Pod ?
+Un conteneur est un environnement isolé dans lequel une application s'exécute avec ses dépendances. 
+Un Pod est une abstraction Kubernetes qui regroupe un ou plusieurs conteneurs étroitement liés.
+
 5. Quelles limites présente un cluster local à un seul nœud par rapport à un cluster de production ?
+Un cluster local à un seul nœud, comme votre installation Minikube, présente plusieurs limites :
+- Absence de haute disponibilité : si le nœud tombe en panne, l'ensemble du cluster devient indisponible.
+- Ressources limitées : les applications doivent partager les ressources d'une seule machine.
+- Absence de répartition entre plusieurs machines : Kubernetes ne peut pas répartir les Pods sur plusieurs nœuds.
+- Résilience limitée : la suppression d'un Pod peut être compensée par Kubernetes, mais la panne du nœud entier ne peut pas être compensée par un autre nœud.
+- Environnement moins réaliste : les problématiques de réseau entre machines, de stockage distribué, de tolérance aux pannes et de montée en charge sont moins bien représentées.
 
 ### Livrable
 
@@ -157,6 +181,13 @@ kubectl get namespaces
 ```
 
 **Question 2.** Quel intérêt présente un namespace dans un environnement partagé entre plusieurs équipes ?
+Un namespace permet de diviser logiquement un cluster Kubernetes en plusieurs espaces isolés.
+Dans un environnement partagé entre plusieurs équipes, il permet notamment :
+- De séparer les ressources de chaque équipe ou projet.
+- D'éviter les conflits de noms entre les ressources.
+- De faciliter la gestion des droits d'accès avec les mécanismes RBAC.
+- De définir des quotas de ressources (CPU, mémoire, nombre de Pods, etc.) pour chaque équipe.
+- De faciliter l'administration et la suppression des ressources d'un projet.
 
 ### 4.3 Créer une page web avec une ConfigMap
 
@@ -192,6 +223,7 @@ kubectl describe configmap page-web -n tp-k8s
 ```
 
 **Question 3.** Pourquoi utiliser une ConfigMap plutôt que d’intégrer directement la page dans le manifeste du Deployment ?
+Une ConfigMap permet de stocker des données de configuration séparément des manifestes qui définissent les applications.
 
 ### 4.4 Créer le Deployment
 
@@ -316,10 +348,27 @@ curl -i http://localhost:8080
 ### Questions
 
 1. Quel est le rôle du Deployment par rapport au ReplicaSet ?
+Le Deployment est une ressource Kubernetes qui permet de déclarer et de gérer l'état souhaité d'une application.
+Le Deployment s'appuie sur un ReplicaSet, qui est chargé de maintenir le nombre de Pods demandé.
+La différence essentielle est donc que le Deployment gère le cycle de vie et les mises à jour de l'application, tandis que le ReplicaSet maintient le nombre de Pods souhaité.
+
 2. Pourquoi ne pas accéder directement aux adresses IP des Pods ?
+Les adresses IP des Pods sont généralement dynamiques : elles peuvent changer lorsqu'un Pod est supprimé puis recréé.
+Du coup il vaut mieux accéder à l'application via le Service plutôt que directement via les adresses IP des deux Pods.
+
 3. Quelle différence existe-t-il entre `ClusterIP`, `NodePort` et `LoadBalancer` ?
+Ce sont trois types de Services Kubernetes qui définissent différentes façons d'accéder à une application.
+- ClusterIP :	Attribue une adresse IP virtuelle au Service.
+- NodePort : Ouvre un port sur chaque nœud Kubernetes et redirige le trafic vers le Service.
+- LoadBalancer : Demande la création d'un répartiteur de charge externe.
+
 4. Quelle différence existe-t-il entre une readiness probe et une liveness probe ?
+Ce sont deux mécanismes de vérification de la santé d'un conteneur.
+Readiness probe : Elle vérifie si l'application est prête à recevoir des requêtes.
+Liveness probe : Elle vérifie si l'application fonctionne toujours correctement.
+
 5. Que peut-il se passer si une limite mémoire est trop basse ?
+Si la limite mémoire est trop faible, le conteneur risque de dépasser la quantité de mémoire autorisée.
 
 ---
 
