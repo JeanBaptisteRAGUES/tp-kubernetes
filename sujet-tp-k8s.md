@@ -542,9 +542,21 @@ kubectl rollout status deployment/web -n tp-k8s
 ### Questions
 
 1. Que signifie la stratégie `RollingUpdate` ?
+La stratégie RollingUpdate permet de mettre à jour progressivement les Pods d'un Deployment, en remplaçant les anciennes instances par de nouvelles sans arrêter simultanément l'ensemble de l'application.
+
 2. Pourquoi une mise à jour progressive ne garantit-elle pas, à elle seule, une disponibilité parfaite ?
+Même avec une mise à jour progressive, des interruptions peuvent survenir dans certaines situations :
+- Les nouveaux Pods peuvent rencontrer des erreurs au démarrage ou ne pas devenir prêts.
+- L'application peut présenter des bugs après la mise à jour.
+- Le nombre de réplicas disponibles peut être insuffisant pour absorber la charge pendant le remplacement.
+- Des problèmes externes, comme une panne réseau ou une panne du nœud, peuvent rendre l'application inaccessible.
+
 3. Dans quelles conditions `rollout undo` fonctionne-t-il ?
+La commande 'rollout undo' fonctionne lorsque Kubernetes dispose d'une révision précédente du Deployment à restaurer.
+
 4. Pourquoi faut-il versionner les configurations et planifier les migrations de base de données séparément ?
+Les configurations et les bases de données ne sont pas nécessairement gérées par le Deployment.
+Un retour arrière du Deployment ne restaure pas les données ni le schéma de la base de données. Une migration mal planifiée peut donc rendre l'ancienne version de l'application incompatible avec la nouvelle structure.
 
 ---
 

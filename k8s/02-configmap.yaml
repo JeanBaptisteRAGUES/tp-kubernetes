@@ -12,7 +12,7 @@ data:
       <title>TP Kubernetes</title>
     </head>
     <body>
-      <h1>Application déployée sur Kubernetes</h1>
+      <h1>Version 2 — Application Kubernetes</h1>
       <p> Cours sur le DevOps .</p>
     </body>
     </html>
