@@ -468,9 +468,18 @@ Le Service peut distribuer les connexions vers les Pods prêts. La page étant i
 ### Questions
 
 1. Quelle différence existe-t-il entre la mise à l’échelle manuelle et l’autoscaling ?
+La différence principale est que la mise à l'échelle manuelle nécessite une intervention humaine, tandis que l'autoscaling ajuste automatiquement les ressources en fonction de la charge de travail.
+
 2. Quel est le rôle d’un Horizontal Pod Autoscaler (HPA) ?
+Le Horizontal Pod Autoscaler (HPA) est un mécanisme Kubernetes qui ajuste automatiquement le nombre de Pods d'un Deployment ou d'un autre contrôleur compatible.
+Il peut notamment augmenter le nombre de Pods lorsque la charge augmente, puis le réduire lorsque la charge diminue.
+
 3. Pourquoi un HPA basé sur le CPU nécessite-t-il des métriques et des ressources correctement configurées ?
+Un HPA basé sur le CPU a besoin de connaître l'utilisation réelle du processeur par les Pods afin de déterminer s'il faut augmenter ou diminuer leur nombre.
+
 4. Pourquoi quatre réplicas sur un seul nœud ne garantissent-ils pas la disponibilité en cas de panne de ce nœud ?
+Même avec quatre réplicas, les quatre Pods sont hébergés sur le même nœud Minikube dans notre configuration.
+Si ce nœud tombe en panne, les quatre Pods deviennent simultanément indisponibles. Le Service ne dispose alors plus d'instances fonctionnelles vers lesquelles rediriger les requêtes.
 
 ---
 
