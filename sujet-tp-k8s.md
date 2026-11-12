@@ -649,16 +649,16 @@ kubectl get endpointslices -n tp-k8s
 
 Faites évoluer le déploiement afin de satisfaire les exigences suivantes :
 
-- [ ] Déployer une application avec au moins deux réplicas.
-- [ ] Créer un namespace et un Service dédiés.
-- [ ] Configurer des probes de santé.
-- [ ] Définir des requests et des limits CPU/mémoire.
-- [ ] Démontrer le remplacement automatique d’un Pod supprimé.
-- [ ] Réaliser une mise à l’échelle manuelle.
-- [ ] Effectuer une mise à jour puis un retour arrière.
-- [ ] Provoquer et diagnostiquer un incident.
-- [ ] Documenter les commandes et les observations.
-- [ ] Justifier les choix d’architecture et leurs limites.
+- [x] Déployer une application avec au moins deux réplicas.
+- [x] Créer un namespace et un Service dédiés.
+- [x] Configurer des probes de santé.
+- [x] Définir des requests et des limits CPU/mémoire.
+- [x] Démontrer le remplacement automatique d’un Pod supprimé.
+- [x] Réaliser une mise à l’échelle manuelle.
+- [x] Effectuer une mise à jour puis un retour arrière.
+- [x] Provoquer et diagnostiquer un incident.
+- [x] Documenter les commandes et les observations.
+- [x] Justifier les choix d’architecture et leurs limites.
 
 ### Livrables attendus
 
@@ -672,6 +672,8 @@ Faites évoluer le déploiement afin de satisfaire les exigences suivantes :
 Répondez à la question suivante :
 
 > En quoi Kubernetes apporte-t-il des mécanismes d’orchestration qui dépassent la simple exécution de conteneurs avec Docker, et quelles précautions restent nécessaires pour exploiter une application de manière fiable en production ?
+
+-> Kubernetes apporte une couche d'orchestration qui automatise le déploiement, la gestion, la mise à l'échelle et la récupération des applications conteneurisées. Il facilite considérablement leur exploitation, mais sa présence ne suffit pas à garantir leur fiabilité. Une architecture adaptée, une configuration rigoureuse, une surveillance continue et une bonne gestion de la sécurité et des données restent indispensables en production.
 
 
 ## 13. Nettoyage de l’environnement
